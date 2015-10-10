@@ -3,7 +3,9 @@ Template.landingPage.events({
     e.preventDefault();
 
     let roomAttributes = {
-      name: $('.room-name-field').val()
+      name: $('.room-name-field').val(),
+      username: $('.room-username-field').val(),
+      cookie: Cookie.get('user')
     }
 
     Meteor.call('createRoom', roomAttributes, function(err, res){
