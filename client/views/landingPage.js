@@ -45,5 +45,21 @@ Template.landingPage.events({
       }
     } )
 
+  },
+
+  'submit .join-room-form': function(e){
+    e.preventDefault();
+
+    let roomId = $('.room-id-field').val();
+    let userId = Cookie.get('user');
+
+    Meteor.call('addUserToRoom', roomId, userId , function(err, res){
+      if (err){
+        alert(err)
+      } else {
+        FlowRouter.go('/' + roomId);
+      }
+    } )
+
   }
 })

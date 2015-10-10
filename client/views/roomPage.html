@@ -1,5 +1,13 @@
 <template name="roomPage">
   {{this.name}}
+
+
+  {{#if Template.subscriptionsReady}}
+
+  {{#each usersToShow}}
+    {{> userFeed}}
+  {{/each}}
+
   <!-- their face -->
   <div class="row">
     <div class="user six columns video">
@@ -16,4 +24,9 @@
           <button id="startbutton">Start</button>
     </div>
   </div>
+  {{/if}}
+</template>
+
+<template name="userFeed">
+  <canvas id="{{this}}" class="user-canvas"></canvas>
 </template>
