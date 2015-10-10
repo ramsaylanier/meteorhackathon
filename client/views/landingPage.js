@@ -23,7 +23,11 @@ Template.landingPage.onCreated(function(){
 
 Template.landingPage.helpers({
   userRooms: function(){
-    return Users.findOne(Cookie.get('user')).rooms;
+    let user = Users.findOne(Users.findOne(user))
+
+    if (user){
+      return user.rooms;
+    }
   }
 })
 
