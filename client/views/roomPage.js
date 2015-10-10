@@ -21,7 +21,21 @@ Template.roomPage.onCreated(function(){
     } else {
       instance.ready.set(false);
     }
+
+    let roomId = FlowRouter.getParam('roomId');
+    let userId = Cookie.get('user');
+
+    Meteor.call('addUserToRoom', roomId, userId , function(err, res){
+      console.log("ADDED")
+      if (err){
+        alert(err)
+      }
+    } )
+
 	});
+
+  
+
 
 })
 
@@ -48,10 +62,14 @@ Template.roomPage.onRendered(function(){
     var context = canvas.getContext('2d')
 
     pendingFrames[data.userId] = true
+    var t = setTimeout(function(){
+      pendingFrames[data.userId] = false
+    })
     img.src = data.canvasData;
     img.onload = function(){
       context.drawImage(img, 0, 0)
       pendingFrames[data.userId] = false
+      clearInterval(t)
     }
   })
 
