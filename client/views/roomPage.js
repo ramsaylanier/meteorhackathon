@@ -26,7 +26,6 @@ Template.roomPage.onCreated(function(){
     let userId = Cookie.get('user');
 
     Meteor.call('addUserToRoom', roomId, userId , function(err, res){
-      console.log("ADDED")
       if (err){
         alert(err)
       }
