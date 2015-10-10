@@ -2,9 +2,11 @@
 
   {{#if Template.subscriptionsReady}}
     <h3>Current Rooms</h3>
-    {{#each userRooms}}
-      <a href="/{{this.roomId}}">{{this.name}}</a>
-    {{/each}}
+    <ul>
+      {{#each userRooms}}
+        <li><a href="/{{this.roomId}}">{{this.name}}</a></li>
+      {{/each}}
+    </ul>
   {{/if}}
 
   <h1>Join Room:</h1>
