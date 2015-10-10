@@ -27,6 +27,12 @@ Template.roomPage.onCreated(function(){
 
 Template.roomPage.onRendered(function(){
   // videoStream = new Meteor.Stream('videoStream');
+  Meteor._debug = (function (super_meteor_debug) {
+    return function (error, info) {
+      if (!(info && _.has(info, 'msg')))
+        super_meteor_debug(error, info);
+    }
+  })(Meteor._debug);
 
   Streamy.on(FlowRouter.getParam('roomId'), function(data){
     if(data.userId == Cookie.get('user'))//our own message
