@@ -25,6 +25,9 @@ Template.roomPage.onCreated(function(){
 
 })
 
+var pendingFrames = {}
+var img = new Image()
+
 Template.roomPage.onRendered(function(){
   // videoStream = new Meteor.Stream('videoStream');
   Meteor._debug = (function (super_meteor_debug) {
@@ -38,14 +41,17 @@ Template.roomPage.onRendered(function(){
     if(data.userId == Cookie.get('user'))//our own message
       return
 
+    if(pendingFrames[data.userId])
+      return
+
     var canvas = document.getElementById(data.userId)
     var context = canvas.getContext('2d')
 
-    var img = new Image();
+    pendingFrames[data.userId] = true
     img.src = data.canvasData;
-
     img.onload = function(){
       context.drawImage(img, 0, 0)
+      pendingFrames[data.userId] = false
     }
   })
 

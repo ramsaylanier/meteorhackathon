@@ -233,11 +233,7 @@ Template.userWebcam.onRendered(function(){
 		})
 		return ret
 	}
-	var fps = 20;
-
-	
-
-	
+	var fps = 15;
 
 	function drawLoop() {
 
