@@ -1,5 +1,12 @@
 <template name="landingPage">
 
+  {{#if Template.subscriptionsReady}}
+    <h3>Current Rooms</h3>
+    {{#each userRooms}}
+      <a href="/{{this.roomId}}">{{this.name}}</a>
+    {{/each}}
+  {{/if}}
+
   <h1>Join Room:</h1>
   <form class="room-form" name="room-form">
     <label for="room-id-field">Room Id</label>
