@@ -7,9 +7,10 @@ Meteor.startup(function(){
         alert(err)
       } else {
         Cookie.set('user', res);
+        Meteor.subscribe('currentUser', Cookie.get('user'));
       }
     });
+  } else {
+    Meteor.subscribe('currentUser', cookie);
   }
-
-
-})
+});
