@@ -1,5 +1,7 @@
 Template.userWebcam.onRendered(function(){
 
+				
+
 	var vid = document.getElementById('videoel');
 	var overlay = document.getElementById('overlay');
 	var overlayCC = overlay.getContext('2d');
@@ -157,8 +159,8 @@ Template.userWebcam.onRendered(function(){
 	}
 
 	var emojis = []
-	var base = 0.1
-	var treble = 0.35
+	var base = 0.05
+	var treble = 0.55
 	emojis.push(makeEmoji("neutral", "/img/neutral.svg", [base, base, base, base]))
 	emojis.push(makeEmoji("angry", "/img/angry.svg", [treble, base, base, base]))
 	emojis.push(makeEmoji("sad", "/img/crying.svg", [base, treble, base, base]))
@@ -174,39 +176,39 @@ Template.userWebcam.onRendered(function(){
 		return d
 	}
 
-	function calculateEmoji(weightObjectArray){
-		// var bestDistanceSquared = calculateDistanceSquared(weightArray, emojis[0].weights)
-		// var bestEmojiIndex = 0
-		// for(var i = 1; i < emojis.length; i++){
-		// 	var distanceSquared = calculateDistanceSquared(weightArray, emojis[i].weights)
-		// 	if(distanceSquared < bestDistanceSquared){
-		// 		bestEmojiIndex = i
-		// 		bestDistanceSquared = distanceSquared
-		// 	}
-		// }//this doesn't work too well
-
-		// return emojis[bestEmojiIndex]
-
-		var highestWeight = base
-		var emotion = "neutral"
-
-		for(var i = 0; i < weightObjectArray.length; i++){
-			var weightObject = weightObjectArray[i]
-			var weight = weightObject.value
-			document.getElementById(i+"").innerHTML = weight
-			if(weight >= treble && weight > highestWeight){
-				highestWeight = weight
-				emotion = weightObject.emotion
+	function calculateEmoji(weightArray){
+		var bestDistanceSquared = calculateDistanceSquared(weightArray, emojis[0].weights)
+		var bestEmojiIndex = 0
+		for(var i = 1; i < emojis.length; i++){
+			var distanceSquared = calculateDistanceSquared(weightArray, emojis[i].weights)
+			if(distanceSquared < bestDistanceSquared){
+				bestEmojiIndex = i
+				bestDistanceSquared = distanceSquared
 			}
-		}
+		}//this doesn't work too well
+
+		return emojis[bestEmojiIndex]
+
+		// var highestWeight = base
+		// var emotion = "neutral"
+
+		// for(var i = 0; i < weightObjectArray.length; i++){
+		// 	var weightObject = weightObjectArray[i]
+		// 	var weight = weightObject.value
+		// 	document.getElementById(i+"").innerHTML = weight
+		// 	if(weight >= treble && weight > highestWeight){
+		// 		highestWeight = weight
+		// 		emotion = weightObject.emotion
+		// 	}
+		// }
 
 
-		for(var i = 0; i < emojis.length; i++){
-			if(emojis[i].name == emotion)
-				return emojis[i]
-		}
+		// for(var i = 0; i < emojis.length; i++){
+		// 	if(emojis[i].name == emotion)
+		// 		return emojis[i]
+		// }
 
-		return null
+		// return null
 
 	}
 
@@ -244,7 +246,7 @@ Template.userWebcam.onRendered(function(){
 			if (er) {
 				var weightArray = toWeightArray(er)
 				lastWeightArray = weightArray
-				var emoji = calculateEmoji(er)
+				var emoji = calculateEmoji(weightArray)
 				drawEmoji(overlayCC, circleDetails.center, circleDetails.radius, emoji.source)
 			}
 
@@ -265,6 +267,5 @@ Template.userWebcam.onRendered(function(){
 	var ec = new emotionClassifier();
 	ec.init(emotionModel);
 	var emotionData = ec.getBlank();	
-
 
 })
