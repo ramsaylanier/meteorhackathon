@@ -25,6 +25,26 @@ Template.roomPage.onCreated(function(){
 
 })
 
+Template.roomPage.onRendered(function(){
+  // videoStream = new Meteor.Stream('videoStream');
+
+  Streamy.on(FlowRouter.getParam('roomId'), function(data){
+    if(data.userId == Cookie.get('user'))//our own message
+      return
+
+    var canvas = document.getElementById(data.userId)
+    var context = canvas.getContext('2d')
+
+    var img = new Image();
+    img.src = data.canvasData;
+
+    img.onload = function(){
+      context.drawImage(img, 0, 0)
+    }
+  })
+
+})
+
 Template.roomPage.helpers({
   usersToShow: function(){
     let instance = Template.instance();

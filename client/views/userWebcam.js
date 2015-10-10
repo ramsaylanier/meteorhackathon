@@ -233,9 +233,21 @@ Template.userWebcam.onRendered(function(){
 		})
 		return ret
 	}
+	var fps = 20;
+
+	
+
+	
 
 	function drawLoop() {
-		requestAnimFrame(drawLoop);
+
+		Meteor.setTimeout(function(){
+
+
+			window.requestAnimationFrame(drawLoop)
+
+		}, 1000/fps)
+		// requestAnimFrame(drawLoop);
 		overlayCC.clearRect(0, 0, 400, 300);
 		overlayCC.drawImage(vid, 0, 0, overlay.width, overlay.height);
 		//psrElement.innerHTML = "score :" + ctrack.getScore().toFixed(4);
@@ -261,12 +273,16 @@ Template.userWebcam.onRendered(function(){
 				lastWeightArray = weightArray
 				var emoji = calculateEmoji(weightArray)
 				drawEmoji(overlayCC, circleDetails.center, circleDetails.radius, emoji.source)
+
+				Streamy.emit('broadcastRequest', {
+					roomId: FlowRouter.getParam('roomId'),
+					userId: Cookie.get('user'),
+					canvasData: overlay.toDataURL()
+				})
+
 			}
 
 			
-
-			
-
 			// for(var i = 0; i < positions.length; i++){
 			// 	var position = positions[i];
 			// 	var hueRatio = i / positions.length;
