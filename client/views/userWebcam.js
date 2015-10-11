@@ -1,6 +1,40 @@
+// Smoothing filter, useful for preventing the emoji size from going crazy
+var smoother = function(windowSize) {
+  windowSize = windowSize || 1;
+  var initialized = false;
+  var index = 0;
+  if (typeof Float32Array !== 'undefined') {
+    var memory = new Float32Array(windowSize);
+  } else {
+    var memory = new Array(windowSize);
+  }
+
+  return function(datapoint) {
+    // first run
+    if (!initialized) {
+      for (let i = 0; i < windowSize; i++) {
+        memory[i] = datapoint;
+      }
+      initialized = true;
+      return datapoint;
+    }
+
+    index = (index + 1) % windowSize;
+    memory[index] = datapoint;
+    return memory.reduce(function(sum, value) {
+      return sum + value;
+    }, 0) / windowSize;
+  }
+}
+
+// Keeps the radius from going crazy
+var radiusSmoother = smoother(5);
+var centerXSmoother = smoother(5);
+var centerYSmoother = smoother(3);
+
 Template.userWebcam.onRendered(function(){
 
-				
+
 
 	var vid = document.getElementById('videoel');
 	var overlay = document.getElementById('overlay');
@@ -12,7 +46,7 @@ Template.userWebcam.onRendered(function(){
 	// check for camerasupport
 	if (navigator.getUserMedia) {
 		// set up stream
-		
+
 		var videoSelector = {video : true};
 		if (window.navigator.appVersion.match(/Chrome\/(.*?) /)) {
 			var chromeVersion = parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10);
@@ -35,7 +69,7 @@ Template.userWebcam.onRendered(function(){
 		});
 	} else {
 		//insertAltVideo(vid);
-		alert("This demo depends on getUserMedia, which your browser does not seem to support. :(");
+		alert("smoother demo depends on getUserMedia, which your browser does not seem to support. :(");
 	}
 
 	/*********** setup of emotion detection *************/
@@ -98,7 +132,7 @@ Template.userWebcam.onRendered(function(){
 		ret.maxX += horizontalMargin
 		ret.minX -= horizontalMargin
 
-		ret.maxY += verticalMargin 
+		ret.maxY += verticalMargin
 		ret.minY -= verticalMargin + verticalMarginRatio * verticalRange
 
 		ret.width = ret.maxX - ret.minX
@@ -111,8 +145,11 @@ Template.userWebcam.onRendered(function(){
 
 	function makeCircle(boundingBox){
 
-		var center = [boundingBox.minX + boundingBox.width / 2, boundingBox.minY + boundingBox.height / 2]
+		var center = [boundingBox.minX + boundingBox.width / 2, boundingBox.minY + boundingBox.height / 3]
 		var radius = Math.pow(boundingBox.height * boundingBox.height + boundingBox.width * boundingBox.width, 1/2) / 2
+    radius = radiusSmoother(radius);
+    center[0] = centerXSmoother(center[0]);
+    center[1] = centerYSmoother(center[1]);
 
 		return {
 			center: center,
@@ -198,7 +235,7 @@ Template.userWebcam.onRendered(function(){
 				bestEmojiIndex = i
 				bestDistanceSquared = distanceSquared
 			}
-		}//this doesn't work too well
+		}//smoother doesn't work too well
 
 		return emojis[bestEmojiIndex]
 
@@ -250,7 +287,7 @@ Template.userWebcam.onRendered(function(){
 		if (ctrack.getCurrentPosition()) {
 			// ctrack.draw(overlay);
 			var positions = ctrack.getCurrentPosition()
-			
+
 			var boundingBox = computeBoundingBox(positions)
 
 			var circleDetails = makeCircle(boundingBox)
@@ -260,9 +297,9 @@ Template.userWebcam.onRendered(function(){
 
 
 			var cp = ctrack.getCurrentParameters();
-			
+
 			var er = ec.meanPredict(cp);//tracks the emotion values
-			
+
 			//[angry, sad, surprised, happy]
 			if (er) {
 				var weightArray = toWeightArray(er)
@@ -278,7 +315,7 @@ Template.userWebcam.onRendered(function(){
 
 			}
 
-			
+
 			// for(var i = 0; i < positions.length; i++){
 			// 	var position = positions[i];
 			// 	var hueRatio = i / positions.length;
@@ -291,6 +328,6 @@ Template.userWebcam.onRendered(function(){
 
 	var ec = new emotionClassifier();
 	ec.init(emotionModel);
-	var emotionData = ec.getBlank();	
+	var emotionData = ec.getBlank();
 
 })
